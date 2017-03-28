@@ -21,3 +21,7 @@ There is something I want to add or fix. Feel free to fork the code if you would
 * fix the problem of non-English text input (currently you can only copy and paste)
 * automate proxy selection
 * maybe multithreading
+
+
+
+![folder](folder.png)
