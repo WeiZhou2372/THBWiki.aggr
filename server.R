@@ -1,36 +1,43 @@
 library(shiny)
+rm(list = ls())
+Sys.setlocale("LC_CTYPE","chinese")
+require(rvest, stringr, RCurl)
+extraction = function(url){ #重复的提取图片和保存的工作
+  library(rvest)
+  library(stringr)
+  page = read_html(url, encoding = "utf-8")
+  
+  #获得名字
+  nametag = page %>%
+    html_nodes("#content h1") #保留网页格式
+  
+  #获得封面(在线)
+  img = page %>%
+    html_nodes("#nav a img") %>%
+    as.character()
+  
+  #获得下载地址
+  dld = page %>%
+    html_nodes("#holder #content p") %>%
+    as.character() %>%
+    str_subset('a rel') %>%
+    paste(collapse = '\n\n')
+  
+  message(html_text(nametag))
+  
+  return(paste(as.character(nametag), img, dld, sep="\n\n"))
+}
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
-  require(rvest, stringr, Rcurl)
+shinyServer(function(input, output, session) {
   
-  extraction = function(url, proxy){ #重复的提取图片和保存的工作
-    library(rvest)
-    library(stringr)
-    page = read_html(url, encoding = "utf-8")
-    
-    #获得名字
-    nametag = page %>%
-      html_nodes("#content h1") #保留网页格式
-    
-    #获得封面(在线)
-    img = page %>%
-      html_nodes("#nav a img") %>%
-      as.character()
-    
-    #获得下载地址
-    dld = page %>%
-      html_nodes("#holder #content p") %>%
-      as.character() %>%
-      str_subset('a rel') %>%
-      paste(collapse = '\n\n')
-    
-    message(html_text(nametag))
-    
-    return(paste(as.character(nametag), img, dld, sep="\n\n"))
-  }
-  
-  pullcontent = eventReactive(input$go, {
+  foobar = reactiveValues()
+  foobar$searched = 0
+  foobar$parsed = 0
+  output$ui1 = renderUI({wellPanel()})
+  output$ui2 = renderUI({wellPanel()})
+
+  observeEvent(input$go, {
     ####初始页面####
     init.link = "http://down.thwiki.cc/"
     
@@ -48,10 +55,20 @@ shinyServer(function(input, output) {
       str_match_all('<a href="(.*?)" title="(.*?)"')
     
     links = data.frame(name = links.raw[[2]][,3], link = links.raw[[2]][,2])
-    links
+    output$ui1 = renderUI({
+        wellPanel(
+          actionButton("analyze", "Reconstruct"),
+          verbatimTextOutput("value")
+        )
+    })
+    foobar$searched = foobar$searched + 1
+    
+    foobar$pullcontent = links
   })
   
-  reconstruct = eventReactive(input$analyze, {
+  
+  
+  observeEvent(input$analyze, {
     ####使用代理获取详细内容####
     page.grow = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh">\n
 <head>\n
@@ -62,31 +79,45 @@ shinyServer(function(input, output) {
     <div id="holder">\n
     <div id="content">\n'
     
-    x = nrow(pullcontent())
-    withProgress(message = 'Getting content...', value = 0,{
+    x = nrow(foobar$pullcontent)
+    withProgress(message = 'Getting content...\n', value = 0,{
     for(i in 1:x){
       if (2 %in% input$options) {
         opts = list(
           proxy = input$IP,
           proxyport = as.numeric(input$port)
         )
-        link = getURL(pullcontent()$link[i], .opts = opts)
+        link = getURL(foobar$pullcontent$link[i], .opts = opts)
       } else {
-        link = getURL(pullcontent()$link[i])
+        link = getURL(foobar$pullcontent$link[i])
       }
       page.grow = paste(page.grow, extraction(link), '<br />\n')
-      incProgress(1/x, detail = pullcontent()$name[i])
+      incProgress(1/x, detail = foobar$pullcontent$name[i])
     }
     })
     page.grow = paste(page.grow, '\n</div>\n</div>\n</body>\n</html>')
     write(page.grow, file = "test.html")
-    page.grow
-
+    
+    output$ui2 = renderUI({
+        wellPanel(
+          downloadButton('download', 'Download'),
+          verbatimTextOutput("Ready")
+        )
+    })
+    
+    foobar$parsed = 1
   })
-  output$log = renderPrint({ print(ifelse(reconstruct(), "构建完了", '构建未完成')) })
-  output$value <- renderPrint({ pullcontent()$name })
+  
+  output$value <- renderPrint({
+    a = sapply(foobar$pullcontent$name, paste0, "\n")
+    cat(as.character(a)) 
+  })
   output$download = downloadHandler(filename = "test.html", content = function(file) {
     src = normalizePath("test.html")
     file.rename(src, file)
+  })
+  
+  output$test = renderPrint({
+    foobar$pullcontent
   })
 })

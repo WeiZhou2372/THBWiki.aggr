@@ -9,7 +9,7 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
-      textInput("lookname", "Search", value = NA, placeholder = "社团名称"),
+      textInput("lookname", "Search", value = "logical emotion", placeholder = "社团名称"),
       actionButton("go", "Show me"),
       hr(),
       checkboxGroupInput("options", label = "Options", 
@@ -17,16 +17,17 @@ shinyUI(fluidPage(
                                         "Use proxy" = 2),
                          selected = 1),
       h4("Proxy"),
-      textInput("IP", "IP", value = "171.8.79.143"),
-      textInput("port", "port", value = "8080"),
+      textInput("IP", "IP", value = "125.88.74.122"),
+      textInput("port", "port", value = "85"),
       hr(),
-      actionButton("analyze", "Reconstruct"),
-      downloadButton('download', 'Download')
+      verbatimTextOutput("test")
     ),
     
     mainPanel(
-      verbatimTextOutput("log"),
-      verbatimTextOutput("value")
+      splitLayout(
+        uiOutput("ui1"),
+        uiOutput("ui2")
+      )
     )
   )
 ))
