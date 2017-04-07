@@ -16,7 +16,6 @@ Currently support :
 
 There is something I want to add or fix. Feel free to fork the code if you would like to help me:
 
-* reactive interface (show button only when available)
 * better progress indicator (stacking album art for instance)
 * fix the problem of non-English text input (currently you can only copy and paste)
 * automate proxy selection
