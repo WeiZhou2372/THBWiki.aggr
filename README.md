@@ -1,4 +1,4 @@
-# Search and aggregate by Touhou doujin circles
+# Search by Touhou doujin circles
 
 R Shiny interactive interface
 
@@ -21,6 +21,6 @@ There is something I want to add or fix. Feel free to fork the code if you would
 * automate proxy selection
 * maybe multithreading
 
-
+[test links]
 
 ![folder](border.png)
