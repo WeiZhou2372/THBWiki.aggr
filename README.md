@@ -21,6 +21,6 @@ There is something I want to add or fix. Feel free to fork the code if you would
 * automate proxy selection
 * maybe multithreading
 
-[test links](PastSearchTest/EastNewSound.html)
+[test page](PastSearchTest/IOSYS.html) needs to manually select encoding and stylesheets are not working
 
 ![folder](border.png)
