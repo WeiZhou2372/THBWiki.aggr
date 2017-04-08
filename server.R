@@ -1,6 +1,7 @@
 library(shiny)
-rm(list = ls())
 Sys.setlocale("LC_CTYPE","chinese")
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(rvest, stringr, RCurl)
 require(rvest, stringr, RCurl)
 extraction = function(url){ #重复的提取图片和保存的工作
   library(rvest)
@@ -112,7 +113,7 @@ shinyServer(function(input, output, session) {
     a = sapply(foobar$pullcontent$name, paste0, "\n")
     cat(as.character(a)) 
   })
-  output$download = downloadHandler(filename = "test.html", content = function(file) {
+  output$download = downloadHandler(filename = "result.html", contentType = "text/html",content = function(file) {
     src = normalizePath("test.html")
     file.rename(src, file)
   })
