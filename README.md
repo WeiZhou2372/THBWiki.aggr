@@ -21,6 +21,6 @@ There is something I want to add or fix. Feel free to fork the code if you would
 * automate proxy selection
 * maybe multithreading
 
-[test links](PastSearchTest/logical emotion.html)
+[test links](PastSearchTest/EastNewSound.html)
 
 ![folder](border.png)
