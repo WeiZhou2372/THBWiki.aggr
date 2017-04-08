@@ -1,4 +1,4 @@
-# README
+# Search and aggregate by Touhou doujin circles
 
 R Shiny interactive interface
 
