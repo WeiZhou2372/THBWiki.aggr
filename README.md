@@ -1,3 +1,6 @@
+# **The original site is down, hence this script no longer works**
+# **Goodbye good old times**
+
 # Search by Touhou doujin circles
 
 R Shiny interactive interface
